@@ -146,12 +146,19 @@ while len(papers) < max_papers:
     for paper in results:
         print(f"DEBUG: Paper object: {paper}")  # Inspect the paper object
         # Insert paper data
+        abstract_data = paper.get("abstract_inverted_index", {})
+        if abstract_data:
+            sorted_terms = sorted(abstract_data.items(), key=lambda x: x[1][0])
+            abstract = " ".join(word for word, positions in sorted_terms)
+        else:
+            abstract = "N/A"
+        
         paper_data = {
             "title": paper.get("title", "No title available"),
             "citations": paper.get("cited_by_count", 0),
             "year": paper.get("publication_year", "N/A"),
             "doi": paper.get("doi", "N/A"),
-            "abstract": paper.get("abstract", "N/A")
+            "abstract": abstract
         }
         insert_data(conn, "papers", paper_data)
         
